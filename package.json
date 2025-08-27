@@ -7,6 +7,8 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/index.js",
+    "server": "jiti src/server.ts",
+    "server:dev": "jiti src/server.ts --watch",
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest run --coverage",
@@ -38,6 +40,7 @@
     "globals": "16.3.0",
     "jest": "30.0.5",
     "jiti": "2.5.1",
+    "pino-pretty": "^13.1.1",
     "pnpm": "10.15.0",
     "prettier": "3.6.2",
     "ts-jest": "29.4.1",
@@ -48,6 +51,7 @@
   },
   "dependencies": {
     "dotenv": "^17.2.1",
+    "fastify": "^5.5.0",
     "openai": "^5.16.0",
     "zod": "^4.1.3"
   }
