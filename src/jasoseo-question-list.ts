@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import z from "zod";
 
 import { environment } from "./environment.js";
 
@@ -39,6 +40,20 @@ function calculateCost(
   return { inputCost, outputCost, totalCost, totalCostKRW };
 }
 
+const pastQuestionsSchema = z
+  .object({
+    questions: z
+      .array(
+        z.object({
+          question: z.string().min(1),
+          sources: z.array(z.string().min(1)),
+        }),
+      )
+      .max(5),
+    reasoning: z.string().min(1),
+  })
+  .strict();
+
 async function searchCompanyJasoseoQuestions(): Promise<void> {
   performance.measure("llm");
   const { OPENAI_API_KEY: apiKey } = environment;
@@ -47,10 +62,10 @@ async function searchCompanyJasoseoQuestions(): Promise<void> {
   const openai = new OpenAI({ apiKey });
 
   const llmResponse = await openai.responses.create({
-    input: `검색을 통해, 에이블제이 회사 웹개발자 직무의 근 5년간 자소서 질문 리스트를 최대 5개 찾는다. 각 질문들의 내용은 중복되지 않아야 한다. 결과를 <output_format>형식으로 반환. 찾지 못했으면, 빈 배열 반환. Reasoning에 추론 과정 포함. 출처는 sources에 포함.
+    input: `검색을 통해, 에이블제이 회사 웹개발자 직무의 근 5년간 자소서 질문 리스트를 최대 5개 찾는다. 각 질문들의 내용은 중복되지 않아야 한다. 결과를 <output_format>형식으로 반환. 찾지 못했으면, 빈 배열 반환. Reasoning에 추론 과정 포함.질문의 출처들은 sources에 포함.
     <output_format>
     \`\`\`json
-    {"reasoning":"...","results":[{"sources":[],"question":"..."}]}
+    {"reasoning":"...","questions":[{"sources":[],"question":"..."}]}
     \`\`\`
     </output_format>
     `,
@@ -60,13 +75,20 @@ async function searchCompanyJasoseoQuestions(): Promise<void> {
     tools: [{ type: "web_search" }],
   });
 
+  const cleanedText = llmResponse.output_text
+    .replaceAll("```json", "")
+    .replaceAll("```", "")
+    .trim();
+
+  const parsed = pastQuestionsSchema.parse(JSON.parse(cleanedText));
+
   const endTime = performance.now();
 
   console.log(
     `LLM call took ${((endTime - startTime) / 1000).toString()} seconds.`,
   );
 
-  console.log(llmResponse.output_text);
+  console.log(parsed);
   console.log(JSON.stringify(llmResponse.usage, undefined, 2));
 
   // Calculate and display cost
