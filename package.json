@@ -47,6 +47,8 @@
     "vitest": "3.2.4"
   },
   "dependencies": {
-    "openai": "^5.16.0"
+    "dotenv": "^17.2.1",
+    "openai": "^5.16.0",
+    "zod": "^4.1.3"
   }
 }
