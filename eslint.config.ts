@@ -2,7 +2,6 @@ import js from "@eslint/js";
 import vitest from "@vitest/eslint-plugin";
 import eslintConfigPrettier from "eslint-config-prettier";
 import perfectionist from "eslint-plugin-perfectionist";
-import { configs } from "eslint-plugin-pnpm";
 import pluginPromise from "eslint-plugin-promise";
 import sonarjs from "eslint-plugin-sonarjs";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
@@ -10,7 +9,6 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  ...configs.recommended,
   perfectionist.configs["recommended-natural"],
   sonarjs.configs.recommended,
   pluginPromise.configs["flat/recommended"],
